@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎲 GAMBLE SIM · lose your virtual coins</title>
+  <title>AGRO-STAKES · gamble sim</title>
   <style>
     * {
       box-sizing: border-box;
@@ -12,7 +12,8 @@
     }
 
     body {
-      background: linear-gradient(145deg, #0b1a2e 0%, #1a2f3f 100%);
+      background: #0a060f;
+      background-image: radial-gradient(circle at 30% 10%, #1e0b2e 0%, #0a0610 90%);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -21,19 +22,96 @@
       padding: 16px;
     }
 
-    .casino-card {
-      background: rgba(15, 25, 35, 0.85);
-      backdrop-filter: blur(8px);
-      border-radius: 3.5rem 3.5rem 2.5rem 2.5rem;
-      box-shadow: 0 30px 45px -15px rgba(0, 0, 0, 0.9), 0 0 0 2px #2e4b5c inset, 0 0 0 4px #0e1a22 inset;
+    /* ----- MAIN CARD (horizontal layout with right column) ----- */
+    .app-container {
+      display: flex;
+      flex-direction: row;
+      max-width: 1100px;
       width: 100%;
-      max-width: 680px;
-      padding: 32px 28px 38px;
-      color: #eef5f0;
-      border: 1px solid #5b8a9c;
+      background: rgba(12, 6, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 3rem 3rem 2.5rem 2.5rem;
+      box-shadow: 0 30px 45px -15px #000000, 0 0 0 2px #3e1e5c inset, 0 0 0 4px #150b21 inset,
+                  0 0 40px #b23bff33, 0 0 80px #ff3bb033;
+      border: 1px solid #a45eff;
+      overflow: hidden;
       transition: all 0.2s;
     }
 
+    /* ----- LEFT CONTENT (game area) ----- */
+    .game-panel {
+      flex: 1;
+      padding: 32px 28px 38px;
+      color: #f0e6ff;
+      min-width: 0; /* prevent overflow */
+    }
+
+    /* ----- RIGHT NAVIGATION COLUMN ----- */
+    .nav-column {
+      width: 110px;
+      background: rgba(20, 8, 33, 0.7);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 0 20px;
+      gap: 28px;
+      border-left: 2px solid #7a3bbf;
+      box-shadow: -8px 0 20px #00000055, inset 2px 0 10px #9b4eff33;
+      position: relative;
+    }
+
+    .nav-btn {
+      background: #1f1030;
+      border: 2px solid #9f5eff;
+      color: #dbbaff;
+      width: 68px;
+      height: 68px;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 6px 0 #320d4b, 0 8px 16px black;
+      padding: 0;
+    }
+
+    .nav-btn .icon {
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .nav-btn.active {
+      background: #381a57;
+      border-color: #ff8aff;
+      color: #ffffff;
+      box-shadow: 0 0 18px #ff6eff, 0 6px 0 #3d1559, 0 8px 16px black;
+      transform: scale(1.02);
+    }
+
+    .nav-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #320d4b, 0 8px 16px black;
+    }
+
+    /* ----- GAME PAGES (only one visible at a time) ----- */
+    .page {
+      display: none;
+      flex-direction: column;
+    }
+
+    .page.active-page {
+      display: flex;
+    }
+
+    /* ----- TITLE / HEADER (shared) ----- */
     .header {
       display: flex;
       align-items: center;
@@ -50,26 +128,27 @@
     }
 
     .title h1 {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 800;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ffe484, #d4af37);
+      background: linear-gradient(135deg, #ffa9ff, #e45eff, #b32eff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 0 30px #ff6eff, 0 0 60px #b23bff;
+      filter: drop-shadow(0 0 12px #ff44dd);
     }
 
     .chip-icon {
       font-size: 2.2rem;
-      filter: drop-shadow(0 4px 6px #00000066);
+      filter: drop-shadow(0 0 12px #ff6eff);
     }
 
     .balance-panel {
-      background: #1d2e39;
+      background: #1a0b28;
       border-radius: 100px;
       padding: 8px 22px 8px 18px;
-      box-shadow: inset 0 2px 8px #00000055, 0 6px 12px #00000033, 0 0 0 1px #4d6e7c;
+      box-shadow: inset 0 2px 8px #000000, 0 0 12px #b23bff55, 0 0 0 1px #b87aff;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -80,24 +159,25 @@
       text-transform: uppercase;
       letter-spacing: 1.5px;
       font-weight: 400;
-      color: #b0cfdd;
+      color: #c9a6ff;
     }
 
     .balance-amount {
       font-size: 1.9rem;
       font-weight: 800;
-      color: #f5e56b;
-      text-shadow: 0 0 12px #f5e56b55;
+      color: #ffd966;
+      text-shadow: 0 0 15px #ffb3ff, 0 0 30px #b23bff;
       font-variant-numeric: tabular-nums;
-      min-width: 110px;
+      min-width: 140px;
       text-align: right;
     }
 
-    .slot-area {
-      background: #0c141c;
+    /* ----- GAME ELEMENTS (slot, coinflip, dice) ----- */
+    .slot-area, .coin-area, .dice-area {
+      background: #0b0612;
       border-radius: 28px;
       padding: 26px 18px 18px;
-      box-shadow: inset 0 0 0 2px #253b47, inset 0 0 25px #000000, 0 15px 20px -8px #000000;
+      box-shadow: inset 0 0 0 2px #4e2b6b, inset 0 0 30px #000000, 0 15px 20px -8px #000000, 0 0 25px #b23bff44;
       margin-bottom: 30px;
     }
 
@@ -109,8 +189,8 @@
     }
 
     .reel {
-      background: #1e2f3a;
-      background-image: radial-gradient(circle at 20% 30%, #2f4b5a, #0b151d);
+      background: #1e0f2b;
+      background-image: radial-gradient(circle at 20% 30%, #3a1f4e, #0b0611);
       width: 105px;
       height: 125px;
       border-radius: 22px;
@@ -119,8 +199,8 @@
       justify-content: center;
       font-size: 5.2rem;
       font-weight: 700;
-      box-shadow: inset 0 -6px 0 #050b0f, inset 0 6px 12px #6a8e9e66, 0 10px 15px -5px black;
-      border: 1px solid #518296;
+      box-shadow: inset 0 -6px 0 #060109, inset 0 6px 12px #b27aff66, 0 10px 15px -5px black, 0 0 15px #b23bff66;
+      border: 1px solid #b87aff;
       transition: all 0.1s ease;
       color: #f5e6b0;
       text-shadow: 0 4px 12px black;
@@ -147,111 +227,112 @@
     .bet-area {
       display: flex;
       align-items: center;
-      background: #1a2632;
+      background: #1d0f2d;
       border-radius: 50px;
       padding: 5px;
-      box-shadow: inset 0 2px 8px #000000, 0 0 0 1px #39515e;
+      box-shadow: inset 0 2px 8px #000000, 0 0 0 1px #9f5eff;
     }
 
     .bet-btn {
-      background: #293f4b;
+      background: #2f1a41;
       border: none;
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      color: #e9f2f0;
+      color: #efdbff;
       font-size: 1.8rem;
       font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 5px 0 #0a1217, 0 6px 12px black;
+      box-shadow: 0 5px 0 #0c0512, 0 6px 12px black, 0 0 12px #b23bff77;
       transition: all 0.06s linear;
       user-select: none;
-      line-height: 1;
     }
 
     .bet-btn:active {
       transform: translateY(4px);
-      box-shadow: 0 1px 0 #0a1217, 0 6px 12px black;
+      box-shadow: 0 1px 0 #0c0512, 0 6px 12px black;
     }
 
     .bet-btn:disabled {
       opacity: 0.3;
       transform: translateY(4px);
-      box-shadow: 0 1px 0 #0a1217;
+      box-shadow: 0 1px 0 #0c0512;
       pointer-events: none;
     }
 
     .bet-value {
       font-size: 1.7rem;
       font-weight: 800;
-      min-width: 85px;
+      min-width: 100px;
       text-align: center;
-      color: #e9d48b;
-      text-shadow: 0 2px 6px black;
+      color: #e9c4ff;
+      text-shadow: 0 0 10px #ff6eff, 0 2px 6px black;
       letter-spacing: 0.5px;
     }
 
-    .spin-btn {
-      background: linear-gradient(145deg, #dbb42c, #b38f1f);
+    .spin-btn, .action-btn {
+      background: linear-gradient(145deg, #c44eff, #9f2eff);
       border: none;
-      color: #17212b;
+      color: #1b0927;
       font-weight: 900;
-      font-size: 1.5rem;
-      padding: 14px 38px;
+      font-size: 1.4rem;
+      padding: 14px 32px;
       border-radius: 60px;
       text-transform: uppercase;
       letter-spacing: 3px;
       cursor: pointer;
-      box-shadow: 0 10px 0 #6b4e14, 0 12px 20px black;
+      box-shadow: 0 10px 0 #4b1a6b, 0 12px 20px black, 0 0 30px #ff6eff;
       transition: all 0.08s linear;
-      text-shadow: 0 1px 0 #ffe28c;
+      text-shadow: 0 1px 0 #ffb3ff;
       flex: 0 0 auto;
     }
 
-    .spin-btn:active {
+    .spin-btn:active, .action-btn:active {
       transform: translateY(6px);
-      box-shadow: 0 4px 0 #6b4e14, 0 12px 20px black;
+      box-shadow: 0 4px 0 #4b1a6b, 0 12px 20px black;
     }
 
-    .spin-btn:disabled {
+    .spin-btn:disabled, .action-btn:disabled {
       opacity: 0.55;
       transform: translateY(6px);
-      box-shadow: 0 4px 0 #6b4e14;
+      box-shadow: 0 4px 0 #4b1a6b;
       pointer-events: none;
       filter: grayscale(0.5);
     }
 
     .message-box {
       margin-top: 26px;
-      background: #0d1a21;
+      background: #0f0719;
       border-radius: 60px;
       padding: 14px 24px;
       text-align: center;
       font-weight: 500;
       font-size: 1.1rem;
-      box-shadow: inset 0 2px 10px black, 0 0 0 1px #2e4d5b;
+      box-shadow: inset 0 2px 10px black, 0 0 0 1px #9f5eff, 0 0 15px #b23bff55;
       min-height: 62px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #b7d9e8;
+      color: #dbbaff;
       transition: 0.2s;
       letter-spacing: 0.3px;
     }
 
     .message-box.win {
-      color: #c6f0b0;
-      text-shadow: 0 0 10px #7bbf5b;
-      background: #14291c;
+      color: #d4ffb0;
+      text-shadow: 0 0 12px #aaff6a;
+      background: #1c2b0e;
+      box-shadow: inset 0 2px 10px black, 0 0 0 1px #aaff6a, 0 0 20px #aaff6a;
     }
 
     .message-box.loss {
-      color: #f0a8a8;
-      background: #2a1818;
-      text-shadow: 0 0 8px #b34141;
+      color: #ffb0b0;
+      background: #2b0e1c;
+      text-shadow: 0 0 12px #ff6a6a;
+      box-shadow: inset 0 2px 10px black, 0 0 0 1px #ff6a6a, 0 0 20px #ff6a6a;
     }
 
     .reset-area {
@@ -262,8 +343,8 @@
 
     .reset-btn {
       background: none;
-      border: 1px solid #3d5b6b;
-      color: #9bb7c7;
+      border: 1px solid #9f5eff;
+      color: #c9a6ff;
       padding: 8px 20px;
       border-radius: 40px;
       font-size: 0.85rem;
@@ -272,316 +353,626 @@
       cursor: pointer;
       transition: 0.15s;
       backdrop-filter: blur(4px);
+      box-shadow: 0 0 10px #b23bff44;
     }
 
     .reset-btn:hover {
-      background: #22333e;
-      border-color: #86adc0;
-      color: #d7ecf5;
+      background: #2f1a41;
+      border-color: #ff8aff;
+      color: #ffffff;
+      box-shadow: 0 0 18px #ff6eff;
     }
 
     .footer-note {
       font-size: 0.7rem;
       text-align: center;
-      color: #4d6e7c;
+      color: #7a5a9a;
       margin-top: 18px;
       letter-spacing: 0.5px;
     }
 
-    .symbol-gold {
-      color: #f5d742;
-      text-shadow: 0 0 20px #f5d74280;
+    /* coinflip & dice specific */
+    .coin-display, .dice-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      margin: 20px 0 10px;
+      font-size: 6rem;
+      filter: drop-shadow(0 0 25px #ff8aff);
+    }
+
+    .coin-choice, .dice-choice {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+    }
+
+    .choice-btn {
+      background: #1f1030;
+      border: 2px solid #9f5eff;
+      color: #dbbaff;
+      padding: 16px 32px;
+      border-radius: 60px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #320d4b, 0 8px 16px black, 0 0 20px #b23bff66;
+      transition: all 0.1s;
+    }
+
+    .choice-btn.active {
+      background: #381a57;
+      border-color: #ff8aff;
+      color: white;
+      box-shadow: 0 0 25px #ff6eff, 0 8px 0 #3d1559;
+    }
+
+    .choice-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #320d4b, 0 8px 16px black;
+    }
+
+    /* responsive */
+    @media (max-width: 750px) {
+      .app-container {
+        flex-direction: column-reverse;
+      }
+      .nav-column {
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        padding: 15px 0;
+        border-left: none;
+        border-bottom: 2px solid #7a3bbf;
+        gap: 20px;
+      }
+      .nav-btn {
+        width: 70px;
+        height: 60px;
+        border-radius: 16px;
+      }
+      .game-panel {
+        padding: 22px 16px;
+      }
+      .title h1 {
+        font-size: 1.7rem;
+      }
+      .balance-amount {
+        font-size: 1.5rem;
+        min-width: 110px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="casino-card">
-  <div class="header">
-    <div class="title">
-      <span class="chip-icon">🎰</span>
-      <h1>GAMBLE SIM</h1>
-    </div>
-    <div class="balance-panel">
-      <span class="balance-label">BALANCE</span>
-      <span class="balance-amount" id="balanceDisplay">1000</span>
-    </div>
-  </div>
-
-  <div class="slot-area">
-    <div class="reels">
-      <div class="reel" id="reel0">🍒</div>
-      <div class="reel" id="reel1">🍒</div>
-      <div class="reel" id="reel2">🍒</div>
-    </div>
-
-    <div class="controls">
-      <div class="bet-area">
-        <button class="bet-btn" id="betMinus" aria-label="decrease bet">−</button>
-        <span class="bet-value" id="betDisplay">50</span>
-        <button class="bet-btn" id="betPlus" aria-label="increase bet">+</button>
+<div class="app-container">
+  <!-- LEFT: GAME AREA (dynamic pages) -->
+  <div class="game-panel">
+    <!-- Shared header with title and balance -->
+    <div class="header">
+      <div class="title">
+        <span class="chip-icon">🌿</span>
+        <h1>AGRO-STAKES</h1>
       </div>
-      <button class="spin-btn" id="spinButton">SPIN</button>
+      <div class="balance-panel">
+        <span class="balance-label">BALANCE</span>
+        <span class="balance-amount" id="balanceDisplay">100000</span>
+      </div>
+    </div>
+
+    <!-- ========== SLOT PAGE ========== -->
+    <div id="page-slot" class="page active-page">
+      <div class="slot-area">
+        <div class="reels">
+          <div class="reel" id="reel0">🍒</div>
+          <div class="reel" id="reel1">🍒</div>
+          <div class="reel" id="reel2">🍒</div>
+        </div>
+        <div class="controls">
+          <div class="bet-area">
+            <button class="bet-btn" id="betMinus" aria-label="decrease bet">−</button>
+            <span class="bet-value" id="betDisplay">500</span>
+            <button class="bet-btn" id="betPlus" aria-label="increase bet">+</button>
+          </div>
+          <button class="spin-btn" id="spinButton">SPIN</button>
+        </div>
+      </div>
+      <div class="message-box" id="messageBox">
+        🎲 Place your bet and spin!
+      </div>
+      <div class="reset-area">
+        <button class="reset-btn" id="resetButton">↻ RESET BALANCE</button>
+      </div>
+      <div class="footer-note">virtual coins only · no real gambling</div>
+    </div>
+
+    <!-- ========== COINFLIP PAGE ========== -->
+    <div id="page-coin" class="page">
+      <div class="coin-area">
+        <div class="coin-display" id="coinDisplay">🪙</div>
+        <div class="coin-choice">
+          <button class="choice-btn active" data-coin="HEADS" id="choiceHeads">HEADS</button>
+          <button class="choice-btn" data-coin="TAILS" id="choiceTails">TAILS</button>
+        </div>
+        <div class="controls">
+          <div class="bet-area">
+            <button class="bet-btn" id="coinBetMinus">−</button>
+            <span class="bet-value" id="coinBetDisplay">500</span>
+            <button class="bet-btn" id="coinBetPlus">+</button>
+          </div>
+          <button class="action-btn" id="flipButton">FLIP</button>
+        </div>
+      </div>
+      <div class="message-box" id="coinMessageBox">
+        🪙 Choose heads or tails and flip!
+      </div>
+      <div class="reset-area">
+        <button class="reset-btn" id="coinResetButton">↻ RESET BALANCE</button>
+      </div>
+      <div class="footer-note">virtual coins only · no real gambling</div>
+    </div>
+
+    <!-- ========== DICE PAGE ========== -->
+    <div id="page-dice" class="page">
+      <div class="dice-area">
+        <div class="dice-display" id="diceDisplay">🎲</div>
+        <div class="dice-choice">
+          <button class="choice-btn active" data-dice="UNDER" id="choiceUnder">UNDER 4</button>
+          <button class="choice-btn" data-dice="OVER" id="choiceOver">OVER 3</button>
+        </div>
+        <div class="controls">
+          <div class="bet-area">
+            <button class="bet-btn" id="diceBetMinus">−</button>
+            <span class="bet-value" id="diceBetDisplay">500</span>
+            <button class="bet-btn" id="diceBetPlus">+</button>
+          </div>
+          <button class="action-btn" id="rollButton">ROLL</button>
+        </div>
+      </div>
+      <div class="message-box" id="diceMessageBox">
+        🎲 Pick under 4 or over 3, then roll!
+      </div>
+      <div class="reset-area">
+        <button class="reset-btn" id="diceResetButton">↻ RESET BALANCE</button>
+      </div>
+      <div class="footer-note">virtual coins only · no real gambling</div>
     </div>
   </div>
 
-  <div class="message-box" id="messageBox">
-    🎲 Place your bet and spin!
+  <!-- RIGHT: NAVIGATION COLUMN -->
+  <div class="nav-column">
+    <button class="nav-btn active" data-page="slot" id="navSlot">
+      <span class="icon">🎰</span>
+      <span>SLOT</span>
+    </button>
+    <button class="nav-btn" data-page="coin" id="navCoin">
+      <span class="icon">🪙</span>
+      <span>COIN</span>
+    </button>
+    <button class="nav-btn" data-page="dice" id="navDice">
+      <span class="icon">🎲</span>
+      <span>DICE</span>
+    </button>
   </div>
-
-  <div class="reset-area">
-    <button class="reset-btn" id="resetButton">↻ RESET BALANCE</button>
-  </div>
-  <div class="footer-note">virtual coins only · no real gambling</div>
 </div>
 
 <script>
   (function() {
-    // ---------- CONFIG ----------
-    const INITIAL_BALANCE = 1000;
-    const MIN_BET = 10;
-    const MAX_BET = 500;
-    const BET_STEP = 10;
+    // ---------- GLOBAL STATE ----------
+    const INITIAL_BALANCE = 100000;
+    const MIN_BET = 100;
+    const MAX_BET = 10000;
+    const BET_STEP = 100;
 
-    // Payout multipliers (for 3 of a kind)
-    const PAYOUTS = {
-      '🍒': 5,    // cherries
-      '🍋': 8,    // lemon
-      '🍊': 10,   // orange
-      '🍇': 15,   // grape
-      '⭐': 25,   // star
-      '7️⃣': 50,   // lucky seven
-      '💎': 100   // diamond (rare)
-    };
-
-    // Reel symbol pool (weighted for realism, but still random)
-    const SYMBOLS = [
-      '🍒', '🍒', '🍒', '🍒', '🍒',   // cherries common
-      '🍋', '🍋', '🍋', '🍋',         // lemon
-      '🍊', '🍊', '🍊',               // orange
-      '🍇', '🍇',                     // grape
-      '⭐',                           // star
-      '7️⃣',                           // seven
-      '💎'                            // diamond (rare)
-    ];
-
-    // ---------- STATE ----------
     let balance = INITIAL_BALANCE;
-    let currentBet = 50;           // default bet
-    let spinning = false;
-    let spinInterval = null;
 
-    // DOM elements
+    // ---- slot state ----
+    let slotBet = 500;
+    let slotSpinning = false;
+    let slotInterval = null;
+
+    // ---- coinflip state ----
+    let coinBet = 500;
+    let coinChoice = 'HEADS';   // HEADS or TAILS
+    let coinSpinning = false;
+    let coinInterval = null;
+
+    // ---- dice state ----
+    let diceBet = 500;
+    let diceChoice = 'UNDER';   // UNDER (1-3) or OVER (4-6)
+    let diceSpinning = false;
+    let diceInterval = null;
+
+    // ---------- DOM ELEMENTS ----------
     const balanceDisplay = document.getElementById('balanceDisplay');
-    const betDisplay = document.getElementById('betDisplay');
-    const reelEls = [
+
+    // slot elements
+    const slotReels = [
       document.getElementById('reel0'),
       document.getElementById('reel1'),
       document.getElementById('reel2')
     ];
-    const spinButton = document.getElementById('spinButton');
-    const betMinus = document.getElementById('betMinus');
-    const betPlus = document.getElementById('betPlus');
-    const messageBox = document.getElementById('messageBox');
-    const resetButton = document.getElementById('resetButton');
+    const slotBetDisplay = document.getElementById('betDisplay');
+    const slotSpinBtn = document.getElementById('spinButton');
+    const slotBetMinus = document.getElementById('betMinus');
+    const slotBetPlus = document.getElementById('betPlus');
+    const slotMessage = document.getElementById('messageBox');
+    const slotResetBtn = document.getElementById('resetButton');
+
+    // coin elements
+    const coinDisplay = document.getElementById('coinDisplay');
+    const coinBetDisplay = document.getElementById('coinBetDisplay');
+    const coinFlipBtn = document.getElementById('flipButton');
+    const coinBetMinus = document.getElementById('coinBetMinus');
+    const coinBetPlus = document.getElementById('coinBetPlus');
+    const coinMessage = document.getElementById('coinMessageBox');
+    const coinResetBtn = document.getElementById('coinResetButton');
+    const choiceHeads = document.getElementById('choiceHeads');
+    const choiceTails = document.getElementById('choiceTails');
+
+    // dice elements
+    const diceDisplay = document.getElementById('diceDisplay');
+    const diceBetDisplay = document.getElementById('diceBetDisplay');
+    const diceRollBtn = document.getElementById('rollButton');
+    const diceBetMinus = document.getElementById('diceBetMinus');
+    const diceBetPlus = document.getElementById('diceBetPlus');
+    const diceMessage = document.getElementById('diceMessageBox');
+    const diceResetBtn = document.getElementById('diceResetButton');
+    const choiceUnder = document.getElementById('choiceUnder');
+    const choiceOver = document.getElementById('choiceOver');
+
+    // nav buttons
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const pages = {
+      slot: document.getElementById('page-slot'),
+      coin: document.getElementById('page-coin'),
+      dice: document.getElementById('page-dice')
+    };
 
     // ---------- HELPERS ----------
-    function updateUI() {
+    function updateBalanceUI() {
       balanceDisplay.textContent = balance;
-      betDisplay.textContent = currentBet;
-
-      // enable/disable bet buttons based on boundaries and spin state
-      const canAdjust = !spinning;
-      betMinus.disabled = !canAdjust || currentBet <= MIN_BET;
-      betPlus.disabled = !canAdjust || currentBet >= MAX_BET;
-
-      // spin button disabled if spinning or balance < currentBet
-      spinButton.disabled = spinning || balance < currentBet;
-
-      // update message box class (only used when new messages set, but we preserve)
     }
 
-    function setMessage(text, isWin = false, isLoss = false) {
-      messageBox.textContent = text;
-      messageBox.classList.remove('win', 'loss');
-      if (isWin) messageBox.classList.add('win');
-      if (isLoss) messageBox.classList.add('loss');
+    // update all bet display and button states (called after balance/bet change)
+    function updateAllUI() {
+      updateBalanceUI();
+
+      // slot
+      slotBetDisplay.textContent = slotBet;
+      slotBetMinus.disabled = slotSpinning || slotBet <= MIN_BET;
+      slotBetPlus.disabled = slotSpinning || slotBet >= MAX_BET;
+      slotSpinBtn.disabled = slotSpinning || balance < slotBet;
+
+      // coin
+      coinBetDisplay.textContent = coinBet;
+      coinBetMinus.disabled = coinSpinning || coinBet <= MIN_BET;
+      coinBetPlus.disabled = coinSpinning || coinBet >= MAX_BET;
+      coinFlipBtn.disabled = coinSpinning || balance < coinBet;
+
+      // dice
+      diceBetDisplay.textContent = diceBet;
+      diceBetMinus.disabled = diceSpinning || diceBet <= MIN_BET;
+      diceBetPlus.disabled = diceSpinning || diceBet >= MAX_BET;
+      diceRollBtn.disabled = diceSpinning || balance < diceBet;
     }
 
-    // generate a random symbol based on weighted pool
-    function getRandomSymbol() {
-      const randomIndex = Math.floor(Math.random() * SYMBOLS.length);
-      return SYMBOLS[randomIndex];
+    // message helpers
+    function setSlotMessage(text, win = false, loss = false) {
+      slotMessage.textContent = text;
+      slotMessage.classList.remove('win', 'loss');
+      if (win) slotMessage.classList.add('win');
+      if (loss) slotMessage.classList.add('loss');
     }
 
-    // get three random symbols (independent reels)
-    function getRandomSpinResult() {
-      return [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
+    function setCoinMessage(text, win = false, loss = false) {
+      coinMessage.textContent = text;
+      coinMessage.classList.remove('win', 'loss');
+      if (win) coinMessage.classList.add('win');
+      if (loss) coinMessage.classList.add('loss');
     }
 
-    // calculate winnings and result message
-    function evaluateSpin(symbols) {
-      const [s1, s2, s3] = symbols;
+    function setDiceMessage(text, win = false, loss = false) {
+      diceMessage.textContent = text;
+      diceMessage.classList.remove('win', 'loss');
+      if (win) diceMessage.classList.add('win');
+      if (loss) diceMessage.classList.add('loss');
+    }
 
-      if (s1 === s2 && s2 === s3) {
-        // three of a kind
-        const multiplier = PAYOUTS[s1] || 3;   // fallback multiplier if missing
-        const winAmount = currentBet * multiplier;
-        return {
-          win: true,
-          amount: winAmount,
-          message: `🎉 THREE ${s1} ! You win ${winAmount} coins (x${multiplier})!`
-        };
-      } else if (s1 === s2 || s2 === s3 || s1 === s3) {
-        // pair – return bet (push)
-        return {
-          win: false,
-          amount: currentBet,   // refund bet (push)
-          message: `🔁 Pair of ${s1 === s2 ? s1 : (s2 === s3 ? s2 : s1)}. It's a push – bet returned.`
-        };
+    // ---------- SLOT LOGIC ----------
+    const SLOT_SYMBOLS = [
+      '🍒','🍒','🍒','🍒','🍒',
+      '🍋','🍋','🍋','🍋',
+      '🍊','🍊','🍊',
+      '🍇','🍇',
+      '⭐',
+      '7️⃣',
+      '💎'
+    ];
+    const SLOT_PAYOUTS = {
+      '🍒': 5, '🍋': 8, '🍊': 10, '🍇': 15, '⭐': 25, '7️⃣': 50, '💎': 100
+    };
+
+    function getRandomSlotSymbol() {
+      return SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+    }
+
+    function getRandomSlotSpin() {
+      return [getRandomSlotSymbol(), getRandomSlotSymbol(), getRandomSlotSymbol()];
+    }
+
+    function evaluateSlotSpin(symbols) {
+      const [a, b, c] = symbols;
+      if (a === b && b === c) {
+        const mult = SLOT_PAYOUTS[a] || 3;
+        const winAmount = slotBet * mult;
+        return { win: true, amount: winAmount, message: `🎉 THREE ${a} ! +${winAmount} coins (x${mult})` };
+      } else if (a === b || b === c || a === c) {
+        return { win: false, amount: slotBet, message: `🔁 Pair. Push – bet returned.` };
       } else {
-        // loss
-        return {
-          win: false,
-          amount: 0,
-          message: `😞 No match... You lose ${currentBet} coins.`
-        };
+        return { win: false, amount: 0, message: `😞 No match... -${slotBet} coins.` };
       }
     }
 
-    // apply spin result, update balance and message
-    function applySpinResult(symbols) {
-      const result = evaluateSpin(symbols);
-
-      // adjust balance: remove bet first, then add win amount (if any)
-      balance -= currentBet;
-      if (result.amount > 0) {
-        balance += result.amount;
-      }
-
-      // ensure balance doesn't go negative (shouldn't happen due to spin check)
+    function slotApplyResult(symbols) {
+      const res = evaluateSlotSpin(symbols);
+      balance -= slotBet;
+      if (res.amount > 0) balance += res.amount;
       if (balance < 0) balance = 0;
 
-      // update message with win/loss styling
-      const isWin = result.win && result.amount > currentBet;   // net win (profit)
-      const isLoss = !result.win && result.amount === 0;
-      setMessage(result.message, isWin, isLoss);
-
-      // refresh UI (balance, disabled states)
-      updateUI();
+      const isWin = res.win && res.amount > slotBet;
+      const isLoss = !res.win && res.amount === 0;
+      setSlotMessage(res.message, isWin, isLoss);
+      updateAllUI();
     }
 
-    // ---------- SPIN LOGIC ----------
-    function startSpin() {
-      if (spinning) return;
-      if (balance < currentBet) {
-        setMessage('⚠️ Not enough coins for this bet!', false, true);
+    function slotStartSpin() {
+      if (slotSpinning || balance < slotBet) {
+        if (balance < slotBet) setSlotMessage('⚠️ Not enough coins!', false, true);
         return;
       }
-
-      spinning = true;
-      updateUI();  // disable buttons
-
-      // add spin animation class
-      reelEls.forEach(reel => reel.classList.add('spin'));
-
-      // clear any previous interval
-      if (spinInterval) clearInterval(spinInterval);
-
-      // rapid random symbol flashing every 80ms
-      spinInterval = setInterval(() => {
-        reelEls.forEach(reel => {
-          reel.textContent = getRandomSymbol();
-        });
+      slotSpinning = true;
+      updateAllUI();
+      slotReels.forEach(r => r.classList.add('spin'));
+      if (slotInterval) clearInterval(slotInterval);
+      slotInterval = setInterval(() => {
+        slotReels.forEach(r => r.textContent = getRandomSlotSymbol());
       }, 80);
 
-      // after 1.2 seconds, stop and settle
       setTimeout(() => {
-        // stop flashing
-        if (spinInterval) {
-          clearInterval(spinInterval);
-          spinInterval = null;
-        }
-
-        // remove animation class
-        reelEls.forEach(reel => reel.classList.remove('spin'));
-
-        // final result
-        const finalSymbols = getRandomSpinResult();
-        reelEls[0].textContent = finalSymbols[0];
-        reelEls[1].textContent = finalSymbols[1];
-        reelEls[2].textContent = finalSymbols[2];
-
-        // apply result & update balance/message
-        applySpinResult(finalSymbols);
-
-        // spin complete
-        spinning = false;
-        updateUI();   // re-enable buttons
-
-        // if balance dropped below min bet, maybe show hint
-        if (balance < MIN_BET) {
-          setMessage('💸 You are broke! Press RESET to play again.', false, true);
-        }
+        clearInterval(slotInterval);
+        slotInterval = null;
+        slotReels.forEach(r => r.classList.remove('spin'));
+        const final = getRandomSlotSpin();
+        slotReels[0].textContent = final[0];
+        slotReels[1].textContent = final[1];
+        slotReels[2].textContent = final[2];
+        slotApplyResult(final);
+        slotSpinning = false;
+        updateAllUI();
+        if (balance < MIN_BET) setSlotMessage('💸 Broke! Reset to play.', false, true);
       }, 1200);
     }
 
-    // ---------- BET ADJUSTMENT ----------
-    function adjustBet(delta) {
-      if (spinning) return;
-      let newBet = currentBet + delta;
-      // clamp
-      if (newBet < MIN_BET) newBet = MIN_BET;
-      if (newBet > MAX_BET) newBet = MAX_BET;
-      // avoid bet exceeding balance? we don't force, but spin will check
-      currentBet = newBet;
-      updateUI();
+    // ---------- COINFLIP LOGIC ----------
+    function coinStartFlip() {
+      if (coinSpinning || balance < coinBet) {
+        if (balance < coinBet) setCoinMessage('⚠️ Not enough coins!', false, true);
+        return;
+      }
+      coinSpinning = true;
+      updateAllUI();
+      coinDisplay.textContent = '🌀';
+      if (coinInterval) clearInterval(coinInterval);
+      coinInterval = setInterval(() => {
+        coinDisplay.textContent = Math.random() < 0.5 ? '🪙' : '🪙';
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(coinInterval);
+        coinInterval = null;
+        const result = Math.random() < 0.5 ? 'HEADS' : 'TAILS';
+        coinDisplay.textContent = result === 'HEADS' ? '🪙' : '🪙'; // same emoji but we show result in message
+        // win condition
+        const userWon = (coinChoice === result);
+        const payout = userWon ? coinBet * 2 : 0;
+        balance -= coinBet;
+        if (payout > 0) balance += payout;
+        if (balance < 0) balance = 0;
+
+        if (userWon) {
+          setCoinMessage(`🎉 ${result}! You won ${coinBet * 2} coins!`, true, false);
+        } else {
+          setCoinMessage(`😞 ${result}. You lost ${coinBet} coins.`, false, true);
+        }
+        coinSpinning = false;
+        updateAllUI();
+      }, 1000);
+    }
+
+    // ---------- DICE LOGIC ----------
+    function diceRoll() {
+      if (diceSpinning || balance < diceBet) {
+        if (balance < diceBet) setDiceMessage('⚠️ Not enough coins!', false, true);
+        return;
+      }
+      diceSpinning = true;
+      updateAllUI();
+      diceDisplay.textContent = '🎲';
+      if (diceInterval) clearInterval(diceInterval);
+      diceInterval = setInterval(() => {
+        diceDisplay.textContent = ['⚀','⚁','⚂','⚃','⚄','⚅'][Math.floor(Math.random()*6)];
+      }, 80);
+
+      setTimeout(() => {
+        clearInterval(diceInterval);
+        diceInterval = null;
+        const roll = Math.floor(Math.random() * 6) + 1; // 1-6
+        const diceEmojis = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+        diceDisplay.textContent = diceEmojis[roll-1];
+
+        let userWon = false;
+        if (diceChoice === 'UNDER') {
+          userWon = roll < 4;   // 1,2,3
+        } else { // OVER
+          userWon = roll > 3;   // 4,5,6
+        }
+        const payout = userWon ? diceBet * 2 : 0;
+        balance -= diceBet;
+        if (payout > 0) balance += payout;
+        if (balance < 0) balance = 0;
+
+        if (userWon) {
+          setDiceMessage(`🎉 Rolled ${roll}! You won ${diceBet * 2} coins!`, true, false);
+        } else {
+          setDiceMessage(`😞 Rolled ${roll}. You lost ${diceBet} coins.`, false, true);
+        }
+        diceSpinning = false;
+        updateAllUI();
+      }, 900);
+    }
+
+    // ---------- BET ADJUSTERS ----------
+    function adjustSlotBet(delta) {
+      if (slotSpinning) return;
+      let nb = slotBet + delta;
+      if (nb < MIN_BET) nb = MIN_BET;
+      if (nb > MAX_BET) nb = MAX_BET;
+      slotBet = nb;
+      updateAllUI();
+    }
+    function adjustCoinBet(delta) {
+      if (coinSpinning) return;
+      let nb = coinBet + delta;
+      if (nb < MIN_BET) nb = MIN_BET;
+      if (nb > MAX_BET) nb = MAX_BET;
+      coinBet = nb;
+      updateAllUI();
+    }
+    function adjustDiceBet(delta) {
+      if (diceSpinning) return;
+      let nb = diceBet + delta;
+      if (nb < MIN_BET) nb = MIN_BET;
+      if (nb > MAX_BET) nb = MAX_BET;
+      diceBet = nb;
+      updateAllUI();
     }
 
     // ---------- RESET ----------
     function resetBalance() {
-      if (spinning) return;  // ignore while spinning (or allow? better not interrupt)
+      if (slotSpinning || coinSpinning || diceSpinning) return;
       balance = INITIAL_BALANCE;
-      // keep current bet, but ensure it's within range
-      if (currentBet > MAX_BET) currentBet = MAX_BET;
-      if (currentBet < MIN_BET) currentBet = MIN_BET;
-      updateUI();
-      setMessage('🔄 Balance reset to 1000 coins. Good luck!');
-      // remove win/loss classes
-      messageBox.classList.remove('win', 'loss');
+      updateAllUI();
+      // reset messages with a friendly note
+      setSlotMessage('🔄 Balance reset to 100,000 coins. Good luck!');
+      setCoinMessage('🔄 Balance reset to 100,000 coins. Good luck!');
+      setDiceMessage('🔄 Balance reset to 100,000 coins. Good luck!');
     }
 
-    // ---------- INITIAL SETUP ----------
-    function init() {
-      // set initial reel symbols (random)
-      const initSymbols = getRandomSpinResult();
-      reelEls[0].textContent = initSymbols[0];
-      reelEls[1].textContent = initSymbols[1];
-      reelEls[2].textContent = initSymbols[2];
-
-      // set balance and bet
-      balance = INITIAL_BALANCE;
-      currentBet = 50;
-      spinning = false;
-
-      updateUI();
-      setMessage('🎲 Place your bet and spin!');
-
-      // ---------- EVENT LISTENERS ----------
-      spinButton.addEventListener('click', startSpin);
-      betMinus.addEventListener('click', () => adjustBet(-BET_STEP));
-      betPlus.addEventListener('click', () => adjustBet(BET_STEP));
-      resetButton.addEventListener('click', resetBalance);
-
-      // optional keyboard support: spacebar for spin (if not focused on button)
-      window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' && !spinning && document.activeElement?.tagName !== 'BUTTON') {
-          e.preventDefault();
-          startSpin();
-        }
+    // ---------- NAVIGATION ----------
+    function switchPage(pageId) {
+      // update active class on pages
+      Object.entries(pages).forEach(([key, el]) => {
+        el.classList.toggle('active-page', key === pageId);
       });
+      // update nav buttons
+      navButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.page === pageId);
+      });
+      // no need to reset state; just keep everything running
     }
 
-    // start the app
+    // ---------- EVENT LISTENERS ----------
+    // slot
+    slotSpinBtn.addEventListener('click', slotStartSpin);
+    slotBetMinus.addEventListener('click', () => adjustSlotBet(-BET_STEP));
+    slotBetPlus.addEventListener('click', () => adjustSlotBet(BET_STEP));
+    slotResetBtn.addEventListener('click', resetBalance);
+
+    // coin
+    coinFlipBtn.addEventListener('click', coinStartFlip);
+    coinBetMinus.addEventListener('click', () => adjustCoinBet(-BET_STEP));
+    coinBetPlus.addEventListener('click', () => adjustCoinBet(BET_STEP));
+    coinResetBtn.addEventListener('click', resetBalance);
+    choiceHeads.addEventListener('click', () => {
+      if (coinSpinning) return;
+      coinChoice = 'HEADS';
+      choiceHeads.classList.add('active');
+      choiceTails.classList.remove('active');
+    });
+    choiceTails.addEventListener('click', () => {
+      if (coinSpinning) return;
+      coinChoice = 'TAILS';
+      choiceTails.classList.add('active');
+      choiceHeads.classList.remove('active');
+    });
+
+    // dice
+    diceRollBtn.addEventListener('click', diceRoll);
+    diceBetMinus.addEventListener('click', () => adjustDiceBet(-BET_STEP));
+    diceBetPlus.addEventListener('click', () => adjustDiceBet(BET_STEP));
+    diceResetBtn.addEventListener('click', resetBalance);
+    choiceUnder.addEventListener('click', () => {
+      if (diceSpinning) return;
+      diceChoice = 'UNDER';
+      choiceUnder.classList.add('active');
+      choiceOver.classList.remove('active');
+    });
+    choiceOver.addEventListener('click', () => {
+      if (diceSpinning) return;
+      diceChoice = 'OVER';
+      choiceOver.classList.add('active');
+      choiceUnder.classList.remove('active');
+    });
+
+    // nav
+    document.getElementById('navSlot').addEventListener('click', () => switchPage('slot'));
+    document.getElementById('navCoin').addEventListener('click', () => switchPage('coin'));
+    document.getElementById('navDice').addEventListener('click', () => switchPage('dice'));
+
+    // keyboard space for active page? optional but keep simple
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !e.repeat) {
+        const activePage = Object.entries(pages).find(([_, el]) => el.classList.contains('active-page'))?.[0];
+        if (activePage === 'slot' && !slotSpinning) { e.preventDefault(); slotStartSpin(); }
+        else if (activePage === 'coin' && !coinSpinning) { e.preventDefault(); coinStartFlip(); }
+        else if (activePage === 'dice' && !diceSpinning) { e.preventDefault(); diceRoll(); }
+      }
+    });
+
+    // ---------- INIT ----------
+    function init() {
+      // set initial reel symbols
+      const initSym = getRandomSlotSpin();
+      slotReels[0].textContent = initSym[0];
+      slotReels[1].textContent = initSym[1];
+      slotReels[2].textContent = initSym[2];
+
+      // set default active choices
+      choiceHeads.classList.add('active');
+      choiceTails.classList.remove('active');
+      coinChoice = 'HEADS';
+
+      choiceUnder.classList.add('active');
+      choiceOver.classList.remove('active');
+      diceChoice = 'UNDER';
+
+      // set balance and bets
+      balance = INITIAL_BALANCE;
+      slotBet = 500;
+      coinBet = 500;
+      diceBet = 500;
+
+      updateAllUI();
+      setSlotMessage('🎲 Place your bet and spin!');
+      setCoinMessage('🪙 Choose heads or tails and flip!');
+      setDiceMessage('🎲 Pick under 4 or over 3, then roll!');
+    }
+
     init();
   })();
 </script>
