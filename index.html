@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎲 GAMBLE SIM · lose your virtual coins</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(145deg, #0b1a2e 0%, #1a2f3f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 16px;
+    }
+
+    .casino-card {
+      background: rgba(15, 25, 35, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 3.5rem 3.5rem 2.5rem 2.5rem;
+      box-shadow: 0 30px 45px -15px rgba(0, 0, 0, 0.9), 0 0 0 2px #2e4b5c inset, 0 0 0 4px #0e1a22 inset;
+      width: 100%;
+      max-width: 680px;
+      padding: 32px 28px 38px;
+      color: #eef5f0;
+      border: 1px solid #5b8a9c;
+      transition: all 0.2s;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffe484, #d4af37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+    }
+
+    .chip-icon {
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 6px #00000066);
+    }
+
+    .balance-panel {
+      background: #1d2e39;
+      border-radius: 100px;
+      padding: 8px 22px 8px 18px;
+      box-shadow: inset 0 2px 8px #00000055, 0 6px 12px #00000033, 0 0 0 1px #4d6e7c;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .balance-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 400;
+      color: #b0cfdd;
+    }
+
+    .balance-amount {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #f5e56b;
+      text-shadow: 0 0 12px #f5e56b55;
+      font-variant-numeric: tabular-nums;
+      min-width: 110px;
+      text-align: right;
+    }
+
+    .slot-area {
+      background: #0c141c;
+      border-radius: 28px;
+      padding: 26px 18px 18px;
+      box-shadow: inset 0 0 0 2px #253b47, inset 0 0 25px #000000, 0 15px 20px -8px #000000;
+      margin-bottom: 30px;
+    }
+
+    .reels {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .reel {
+      background: #1e2f3a;
+      background-image: radial-gradient(circle at 20% 30%, #2f4b5a, #0b151d);
+      width: 105px;
+      height: 125px;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5.2rem;
+      font-weight: 700;
+      box-shadow: inset 0 -6px 0 #050b0f, inset 0 6px 12px #6a8e9e66, 0 10px 15px -5px black;
+      border: 1px solid #518296;
+      transition: all 0.1s ease;
+      color: #f5e6b0;
+      text-shadow: 0 4px 12px black;
+    }
+
+    .reel.spin {
+      animation: pulse 0.15s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.7; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1.02); }
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .bet-area {
+      display: flex;
+      align-items: center;
+      background: #1a2632;
+      border-radius: 50px;
+      padding: 5px;
+      box-shadow: inset 0 2px 8px #000000, 0 0 0 1px #39515e;
+    }
+
+    .bet-btn {
+      background: #293f4b;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: #e9f2f0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #0a1217, 0 6px 12px black;
+      transition: all 0.06s linear;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .bet-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #0a1217, 0 6px 12px black;
+    }
+
+    .bet-btn:disabled {
+      opacity: 0.3;
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #0a1217;
+      pointer-events: none;
+    }
+
+    .bet-value {
+      font-size: 1.7rem;
+      font-weight: 800;
+      min-width: 85px;
+      text-align: center;
+      color: #e9d48b;
+      text-shadow: 0 2px 6px black;
+      letter-spacing: 0.5px;
+    }
+
+    .spin-btn {
+      background: linear-gradient(145deg, #dbb42c, #b38f1f);
+      border: none;
+      color: #17212b;
+      font-weight: 900;
+      font-size: 1.5rem;
+      padding: 14px 38px;
+      border-radius: 60px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      cursor: pointer;
+      box-shadow: 0 10px 0 #6b4e14, 0 12px 20px black;
+      transition: all 0.08s linear;
+      text-shadow: 0 1px 0 #ffe28c;
+      flex: 0 0 auto;
+    }
+
+    .spin-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 4px 0 #6b4e14, 0 12px 20px black;
+    }
+
+    .spin-btn:disabled {
+      opacity: 0.55;
+      transform: translateY(6px);
+      box-shadow: 0 4px 0 #6b4e14;
+      pointer-events: none;
+      filter: grayscale(0.5);
+    }
+
+    .message-box {
+      margin-top: 26px;
+      background: #0d1a21;
+      border-radius: 60px;
+      padding: 14px 24px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 1.1rem;
+      box-shadow: inset 0 2px 10px black, 0 0 0 1px #2e4d5b;
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b7d9e8;
+      transition: 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .message-box.win {
+      color: #c6f0b0;
+      text-shadow: 0 0 10px #7bbf5b;
+      background: #14291c;
+    }
+
+    .message-box.loss {
+      color: #f0a8a8;
+      background: #2a1818;
+      text-shadow: 0 0 8px #b34141;
+    }
+
+    .reset-area {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .reset-btn {
+      background: none;
+      border: 1px solid #3d5b6b;
+      color: #9bb7c7;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.15s;
+      backdrop-filter: blur(4px);
+    }
+
+    .reset-btn:hover {
+      background: #22333e;
+      border-color: #86adc0;
+      color: #d7ecf5;
+    }
+
+    .footer-note {
+      font-size: 0.7rem;
+      text-align: center;
+      color: #4d6e7c;
+      margin-top: 18px;
+      letter-spacing: 0.5px;
+    }
+
+    .symbol-gold {
+      color: #f5d742;
+      text-shadow: 0 0 20px #f5d74280;
+    }
+  </style>
+</head>
+<body>
+<div class="casino-card">
+  <div class="header">
+    <div class="title">
+      <span class="chip-icon">🎰</span>
+      <h1>GAMBLE SIM</h1>
+    </div>
+    <div class="balance-panel">
+      <span class="balance-label">BALANCE</span>
+      <span class="balance-amount" id="balanceDisplay">1000</span>
+    </div>
+  </div>
+
+  <div class="slot-area">
+    <div class="reels">
+      <div class="reel" id="reel0">🍒</div>
+      <div class="reel" id="reel1">🍒</div>
+      <div class="reel" id="reel2">🍒</div>
+    </div>
+
+    <div class="controls">
+      <div class="bet-area">
+        <button class="bet-btn" id="betMinus" aria-label="decrease bet">−</button>
+        <span class="bet-value" id="betDisplay">50</span>
+        <button class="bet-btn" id="betPlus" aria-label="increase bet">+</button>
+      </div>
+      <button class="spin-btn" id="spinButton">SPIN</button>
+    </div>
+  </div>
+
+  <div class="message-box" id="messageBox">
+    🎲 Place your bet and spin!
+  </div>
+
+  <div class="reset-area">
+    <button class="reset-btn" id="resetButton">↻ RESET BALANCE</button>
+  </div>
+  <div class="footer-note">virtual coins only · no real gambling</div>
+</div>
+
+<script>
+  (function() {
+    // ---------- CONFIG ----------
+    const INITIAL_BALANCE = 1000;
+    const MIN_BET = 10;
+    const MAX_BET = 500;
+    const BET_STEP = 10;
+
+    // Payout multipliers (for 3 of a kind)
+    const PAYOUTS = {
+      '🍒': 5,    // cherries
+      '🍋': 8,    // lemon
+      '🍊': 10,   // orange
+      '🍇': 15,   // grape
+      '⭐': 25,   // star
+      '7️⃣': 50,   // lucky seven
+      '💎': 100   // diamond (rare)
+    };
+
+    // Reel symbol pool (weighted for realism, but still random)
+    const SYMBOLS = [
+      '🍒', '🍒', '🍒', '🍒', '🍒',   // cherries common
+      '🍋', '🍋', '🍋', '🍋',         // lemon
+      '🍊', '🍊', '🍊',               // orange
+      '🍇', '🍇',                     // grape
+      '⭐',                           // star
+      '7️⃣',                           // seven
+      '💎'                            // diamond (rare)
+    ];
+
+    // ---------- STATE ----------
+    let balance = INITIAL_BALANCE;
+    let currentBet = 50;           // default bet
+    let spinning = false;
+    let spinInterval = null;
+
+    // DOM elements
+    const balanceDisplay = document.getElementById('balanceDisplay');
+    const betDisplay = document.getElementById('betDisplay');
+    const reelEls = [
+      document.getElementById('reel0'),
+      document.getElementById('reel1'),
+      document.getElementById('reel2')
+    ];
+    const spinButton = document.getElementById('spinButton');
+    const betMinus = document.getElementById('betMinus');
+    const betPlus = document.getElementById('betPlus');
+    const messageBox = document.getElementById('messageBox');
+    const resetButton = document.getElementById('resetButton');
+
+    // ---------- HELPERS ----------
+    function updateUI() {
+      balanceDisplay.textContent = balance;
+      betDisplay.textContent = currentBet;
+
+      // enable/disable bet buttons based on boundaries and spin state
+      const canAdjust = !spinning;
+      betMinus.disabled = !canAdjust || currentBet <= MIN_BET;
+      betPlus.disabled = !canAdjust || currentBet >= MAX_BET;
+
+      // spin button disabled if spinning or balance < currentBet
+      spinButton.disabled = spinning || balance < currentBet;
+
+      // update message box class (only used when new messages set, but we preserve)
+    }
+
+    function setMessage(text, isWin = false, isLoss = false) {
+      messageBox.textContent = text;
+      messageBox.classList.remove('win', 'loss');
+      if (isWin) messageBox.classList.add('win');
+      if (isLoss) messageBox.classList.add('loss');
+    }
+
+    // generate a random symbol based on weighted pool
+    function getRandomSymbol() {
+      const randomIndex = Math.floor(Math.random() * SYMBOLS.length);
+      return SYMBOLS[randomIndex];
+    }
+
+    // get three random symbols (independent reels)
+    function getRandomSpinResult() {
+      return [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
+    }
+
+    // calculate winnings and result message
+    function evaluateSpin(symbols) {
+      const [s1, s2, s3] = symbols;
+
+      if (s1 === s2 && s2 === s3) {
+        // three of a kind
+        const multiplier = PAYOUTS[s1] || 3;   // fallback multiplier if missing
+        const winAmount = currentBet * multiplier;
+        return {
+          win: true,
+          amount: winAmount,
+          message: `🎉 THREE ${s1} ! You win ${winAmount} coins (x${multiplier})!`
+        };
+      } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+        // pair – return bet (push)
+        return {
+          win: false,
+          amount: currentBet,   // refund bet (push)
+          message: `🔁 Pair of ${s1 === s2 ? s1 : (s2 === s3 ? s2 : s1)}. It's a push – bet returned.`
+        };
+      } else {
+        // loss
+        return {
+          win: false,
+          amount: 0,
+          message: `😞 No match... You lose ${currentBet} coins.`
+        };
+      }
+    }
+
+    // apply spin result, update balance and message
+    function applySpinResult(symbols) {
+      const result = evaluateSpin(symbols);
+
+      // adjust balance: remove bet first, then add win amount (if any)
+      balance -= currentBet;
+      if (result.amount > 0) {
+        balance += result.amount;
+      }
+
+      // ensure balance doesn't go negative (shouldn't happen due to spin check)
+      if (balance < 0) balance = 0;
+
+      // update message with win/loss styling
+      const isWin = result.win && result.amount > currentBet;   // net win (profit)
+      const isLoss = !result.win && result.amount === 0;
+      setMessage(result.message, isWin, isLoss);
+
+      // refresh UI (balance, disabled states)
+      updateUI();
+    }
+
+    // ---------- SPIN LOGIC ----------
+    function startSpin() {
+      if (spinning) return;
+      if (balance < currentBet) {
+        setMessage('⚠️ Not enough coins for this bet!', false, true);
+        return;
+      }
+
+      spinning = true;
+      updateUI();  // disable buttons
+
+      // add spin animation class
+      reelEls.forEach(reel => reel.classList.add('spin'));
+
+      // clear any previous interval
+      if (spinInterval) clearInterval(spinInterval);
+
+      // rapid random symbol flashing every 80ms
+      spinInterval = setInterval(() => {
+        reelEls.forEach(reel => {
+          reel.textContent = getRandomSymbol();
+        });
+      }, 80);
+
+      // after 1.2 seconds, stop and settle
+      setTimeout(() => {
+        // stop flashing
+        if (spinInterval) {
+          clearInterval(spinInterval);
+          spinInterval = null;
+        }
+
+        // remove animation class
+        reelEls.forEach(reel => reel.classList.remove('spin'));
+
+        // final result
+        const finalSymbols = getRandomSpinResult();
+        reelEls[0].textContent = finalSymbols[0];
+        reelEls[1].textContent = finalSymbols[1];
+        reelEls[2].textContent = finalSymbols[2];
+
+        // apply result & update balance/message
+        applySpinResult(finalSymbols);
+
+        // spin complete
+        spinning = false;
+        updateUI();   // re-enable buttons
+
+        // if balance dropped below min bet, maybe show hint
+        if (balance < MIN_BET) {
+          setMessage('💸 You are broke! Press RESET to play again.', false, true);
+        }
+      }, 1200);
+    }
+
+    // ---------- BET ADJUSTMENT ----------
+    function adjustBet(delta) {
+      if (spinning) return;
+      let newBet = currentBet + delta;
+      // clamp
+      if (newBet < MIN_BET) newBet = MIN_BET;
+      if (newBet > MAX_BET) newBet = MAX_BET;
+      // avoid bet exceeding balance? we don't force, but spin will check
+      currentBet = newBet;
+      updateUI();
+    }
+
+    // ---------- RESET ----------
+    function resetBalance() {
+      if (spinning) return;  // ignore while spinning (or allow? better not interrupt)
+      balance = INITIAL_BALANCE;
+      // keep current bet, but ensure it's within range
+      if (currentBet > MAX_BET) currentBet = MAX_BET;
+      if (currentBet < MIN_BET) currentBet = MIN_BET;
+      updateUI();
+      setMessage('🔄 Balance reset to 1000 coins. Good luck!');
+      // remove win/loss classes
+      messageBox.classList.remove('win', 'loss');
+    }
+
+    // ---------- INITIAL SETUP ----------
+    function init() {
+      // set initial reel symbols (random)
+      const initSymbols = getRandomSpinResult();
+      reelEls[0].textContent = initSymbols[0];
+      reelEls[1].textContent = initSymbols[1];
+      reelEls[2].textContent = initSymbols[2];
+
+      // set balance and bet
+      balance = INITIAL_BALANCE;
+      currentBet = 50;
+      spinning = false;
+
+      updateUI();
+      setMessage('🎲 Place your bet and spin!');
+
+      // ---------- EVENT LISTENERS ----------
+      spinButton.addEventListener('click', startSpin);
+      betMinus.addEventListener('click', () => adjustBet(-BET_STEP));
+      betPlus.addEventListener('click', () => adjustBet(BET_STEP));
+      resetButton.addEventListener('click', resetBalance);
+
+      // optional keyboard support: spacebar for spin (if not focused on button)
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !spinning && document.activeElement?.tagName !== 'BUTTON') {
+          e.preventDefault();
+          startSpin();
+        }
+      });
+    }
+
+    // start the app
+    init();
+  })();
+</script>
+</body>
+</html>
