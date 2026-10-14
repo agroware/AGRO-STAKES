@@ -554,19 +554,18 @@
       text-shadow: 0 0 12px rgba(255, 78, 205, 0.5);
     }
 
+    /* FIXED MINES GRID — fills the frame */
     .mines-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
       gap: 6px;
       flex: 1;
-      align-content: center;
       margin-bottom: 10px;
-      max-height: 340px;
       min-height: 0;
     }
 
     .mine-tile {
-      aspect-ratio: 1;
       border-radius: 10px;
       border: 1.5px solid var(--border);
       background: linear-gradient(145deg, rgba(24, 16, 40, 0.9), rgba(16, 10, 32, 0.9));
@@ -579,8 +578,7 @@
       user-select: none;
       position: relative;
       overflow: hidden;
-      min-height: 42px;
-      max-height: 64px;
+      min-height: 0;
     }
 
     .mine-tile::before {
@@ -991,7 +989,6 @@
       .header-stats { width: 100%; justify-content: space-between; }
       .brand-title { font-size: 1.1rem; }
       .balance-value { font-size: 1.1rem; }
-      .mines-grid { max-height: none; }
     }
 
     @media (max-width: 600px) {
@@ -1001,7 +998,7 @@
       .bj-card-suit { font-size: 0.85rem; }
       .btn { padding: 8px 18px; font-size: 0.6rem; }
       .mines-grid { gap: 4px; }
-      .mine-tile { min-height: 38px; font-size: 1rem; border-radius: 8px; }
+      .mine-tile { font-size: 1rem; border-radius: 8px; }
       .bet-value { font-size: 0.8rem; min-width: 60px; }
       .bet-btn { width: 26px; height: 26px; font-size: 0.9rem; }
       .start-btn { padding: 14px 36px; font-size: 0.85rem; }
@@ -1236,6 +1233,8 @@
 
     const PARTICLE_COUNT = 70;
     const particles = [];
+    const ATTRACT_RADIUS = 140; // reduced from 400
+    const CONNECT_RADIUS = 90;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -1251,61 +1250,49 @@
           vx: (Math.random() - 0.5) * 0.4,
           vy: (Math.random() - 0.5) * 0.4,
           r: Math.random() * 2 + 0.8,
-          hue: 280 + Math.random() * 60, // purple-pink range
-          alpha: Math.random() * 0.5 + 0.2,
-          baseX: 0,
-          baseY: 0
+          hue: 280 + Math.random() * 60,
+          alpha: Math.random() * 0.5 + 0.2
         });
       }
     }
 
     function draw() {
-      // smooth mouse follow
       mouseX += (targetX - mouseX) * 0.06;
       mouseY += (targetY - mouseY) * 0.06;
 
-      // trail fade
       ctx.fillStyle = 'rgba(4, 2, 10, 0.18)';
       ctx.fillRect(0, 0, w, h);
 
-      // draw glow at cursor
-      const cursorGlow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 280);
-      cursorGlow.addColorStop(0, 'rgba(255, 78, 205, 0.08)');
-      cursorGlow.addColorStop(0.4, 'rgba(180, 78, 255, 0.04)');
+      // smaller cursor glow
+      const cursorGlow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 160);
+      cursorGlow.addColorStop(0, 'rgba(255, 78, 205, 0.07)');
+      cursorGlow.addColorStop(0.4, 'rgba(180, 78, 255, 0.03)');
       cursorGlow.addColorStop(1, 'rgba(4, 2, 10, 0)');
       ctx.fillStyle = cursorGlow;
       ctx.fillRect(0, 0, w, h);
 
-      // update + draw particles
       for (const p of particles) {
-        // cursor attraction
         const dx = mouseX - p.x;
         const dy = mouseY - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 400 && dist > 0) {
-          const force = (400 - dist) / 400 * 0.08;
+        if (dist < ATTRACT_RADIUS && dist > 0) {
+          const force = (ATTRACT_RADIUS - dist) / ATTRACT_RADIUS * 0.08;
           p.vx += (dx / dist) * force;
           p.vy += (dy / dist) * force;
         }
 
         p.x += p.vx;
         p.y += p.vy;
-
-        // damping
         p.vx *= 0.98;
         p.vy *= 0.98;
-
-        // wander
         p.vx += (Math.random() - 0.5) * 0.02;
         p.vy += (Math.random() - 0.5) * 0.02;
 
-        // wrap
         if (p.x < 0) p.x = w;
         if (p.x > w) p.x = 0;
         if (p.y < 0) p.y = h;
         if (p.y > h) p.y = 0;
 
-        // draw particle
         const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 8);
         glow.addColorStop(0, `hsla(${p.hue}, 100%, 70%, ${p.alpha})`);
         glow.addColorStop(1, `hsla(${p.hue}, 100%, 70%, 0)`);
@@ -1314,14 +1301,12 @@
         ctx.arc(p.x, p.y, p.r * 8, 0, Math.PI * 2);
         ctx.fill();
 
-        // core
         ctx.fillStyle = `hsla(${p.hue}, 100%, 85%, ${p.alpha + 0.3})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // draw connections
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const a = particles[i];
@@ -1329,8 +1314,8 @@
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 140) {
-            const alpha = (1 - dist / 140) * 0.12;
+          if (dist < CONNECT_RADIUS) {
+            const alpha = (1 - dist / CONNECT_RADIUS) * 0.12;
             ctx.strokeStyle = `rgba(200, 120, 255, ${alpha})`;
             ctx.lineWidth = 0.6;
             ctx.beginPath();
@@ -1720,7 +1705,6 @@
     setTimeout(() => {
       app.classList.add('visible');
       app.style.display = 'flex';
-      // trigger fade in
       requestAnimationFrame(() => { app.style.opacity = '1'; });
     }, 300);
   });
