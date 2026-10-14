@@ -20,7 +20,6 @@
       --accent-1: #ff4ecd;
       --accent-2: #b44eff;
       --accent-3: #6e3aff;
-      --accent-glow: #ff4ecd;
       --text-primary: #f0e6ff;
       --text-secondary: #a898c8;
       --text-muted: #5e4e7a;
@@ -554,15 +553,25 @@
       text-shadow: 0 0 12px rgba(255, 78, 205, 0.5);
     }
 
-    /* FIXED MINES GRID — fills the frame */
+    /* FIXED: 5x5 SQUARE MINES GRID */
+    .mines-grid-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      margin-bottom: 10px;
+    }
+
     .mines-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(5, 1fr);
       gap: 6px;
-      flex: 1;
-      margin-bottom: 10px;
-      min-height: 0;
+      aspect-ratio: 1 / 1;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
     }
 
     .mine-tile {
@@ -579,6 +588,7 @@
       position: relative;
       overflow: hidden;
       min-height: 0;
+      min-width: 0;
     }
 
     .mine-tile::before {
@@ -1093,7 +1103,9 @@
             </div>
           </div>
 
-          <div class="mines-grid" id="minesGrid"></div>
+          <div class="mines-grid-wrapper">
+            <div class="mines-grid" id="minesGrid"></div>
+          </div>
 
           <div class="bottom-bar">
             <div class="bet-group">
@@ -1165,13 +1177,11 @@
   let currentBet = 500;
   let sessionStart = Date.now();
 
-  // mines
   let minesActive = false;
   let minesStarted = false;
   let minesGrid = [];
   let minesRevealed = 0;
 
-  // blackjack
   let bjActive = false;
   let bjGameOver = false;
   let bjDeck = [];
@@ -1199,7 +1209,6 @@
     blackjack: $('page-blackjack')
   };
 
-  // mines
   const minesGridEl = $('minesGrid');
   const gemsFoundEl = $('gemsFound');
   const multiplierEl = $('multiplier');
@@ -1211,7 +1220,6 @@
   const minesCashout = $('minesCashout');
   const minesMsg = $('minesMsg');
 
-  // blackjack
   const dealerCardsEl = $('dealerCards');
   const playerCardsEl = $('playerCards');
   const dealerScoreEl = $('dealerScore');
@@ -1233,7 +1241,7 @@
 
     const PARTICLE_COUNT = 70;
     const particles = [];
-    const ATTRACT_RADIUS = 140; // reduced from 400
+    const ATTRACT_RADIUS = 140;
     const CONNECT_RADIUS = 90;
 
     function resize() {
@@ -1263,7 +1271,6 @@
       ctx.fillStyle = 'rgba(4, 2, 10, 0.18)';
       ctx.fillRect(0, 0, w, h);
 
-      // smaller cursor glow
       const cursorGlow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 160);
       cursorGlow.addColorStop(0, 'rgba(255, 78, 205, 0.07)');
       cursorGlow.addColorStop(0.4, 'rgba(180, 78, 255, 0.03)');
@@ -1699,7 +1706,6 @@
     }
   });
 
-  // ================= START PAGE LOGIC =================
   enterBtn.addEventListener('click', () => {
     startPage.classList.add('hidden');
     setTimeout(() => {
